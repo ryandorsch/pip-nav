@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PIP-NAV">
-<title>PIP-NAV V0.5</title>
+<title>PIP-NAV V0.5.1</title>
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css">
 <style>
 :root{--g:#39ff72;--b:#7dff9e;--d:#117532;--bg:#001006;--p:rgba(0,12,4,.94)}
@@ -46,7 +46,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);c
 </head>
 <body>
 <div id="map"></div><div id="phosphor"></div><div id="scanlines"></div><div id="vignette"></div>
-<header id="header"><div id="headerTop"><div id="title">PIP-NAV</div><div id="tabs">[ MAP ] &nbsp; [ NAV ] &nbsp; [ DATA ]</div><div id="gps">GPS ○ &nbsp; V0.5</div></div><div id="subtitle">ROBCO INDUSTRIES // MOBILE NAVIGATION TERMINAL</div></header>
+<header id="header"><div id="headerTop"><div id="title">PIP-NAV</div><div id="tabs">[ MAP ] &nbsp; [ NAV ] &nbsp; [ DATA ]</div><div id="gps">GPS ○ &nbsp; V0.5.1</div></div><div id="subtitle">ROBCO INDUSTRIES // MOBILE NAVIGATION TERMINAL</div></header>
 <div id="search"><small>DESTINATION</small><input id="destination" placeholder="> SEARCH WASTELAND..." autocomplete="off"></div>
 <div id="turn"><div id="turnGrid"><div id="arrow">↑</div><div><div id="instruction">CONTINUE</div><div id="street">--</div><div id="then">ROUTE GUIDANCE ACTIVE</div></div><div id="tripTop"><span class="big" id="topDist">--</span> MI<br>REMAINING<br><br><span class="big" id="topEta">--</span><br>ETA<br><span class="big" id="arrival">--</span><br>ARRIVAL</div></div></div>
 <div id="hud"><div id="status">&gt; SYSTEM READY // GPS STANDBY</div><div id="stats">
@@ -61,7 +61,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);c
 <script>
 const $=x=>document.getElementById(x);
 let user=null,marker=null,objMarker=null,watch=null,dest=null,destName="",route=null,steps=[],stepIndex=0,navActive=false,follow=false,voiceOn=true,heading=null;
-let lastFix=null,lastReroute=0,lastReroutePos=null,lastProgress=0,promptState={},routeDistance=0,routeDuration=0;
+let lastFix=null,lastReroute=0,lastReroutePos=null,lastProgress=0,promptState={},routeDistance=0,routeDuration=0,voiceUnlocked=false;
 const map=new maplibregl.Map({container:"map",style:"https://tiles.openfreemap.org/styles/liberty",center:[-74.25,40.4],zoom:9,attributionControl:true});
 map.on("load",()=>{styleMap();$("status").textContent="> MAP DATABASE ONLINE // GPS STANDBY"});
 function styleMap(){const s=map.getStyle();if(!s?.layers)return;s.layers.forEach(l=>{let id=l.id.toLowerCase();try{
@@ -78,18 +78,18 @@ function setHeading(d){if(d==null||isNaN(d))return;heading=(d+360)%360;$("hdg").
 function mkMarker(){let e=document.createElement("div");e.className="player";let a=document.createElement("div");a.className="playerArrow";e.appendChild(a);marker=new maplibregl.Marker({element:e,anchor:"center"})}
 function updateFix(p){const c=p.coords,raw=[c.longitude,c.latitude];if(lastFix){const alpha=.35;user=[lastFix[0]+(raw[0]-lastFix[0])*alpha,lastFix[1]+(raw[1]-lastFix[1])*alpha]}else user=raw;lastFix=user;
 if(!marker){mkMarker();marker.setLngLat(user).addTo(map)}else marker.setLngLat(user);
-let mph=c.speed!=null?Math.max(0,c.speed*2.23694):0;$("speed").textContent=Math.round(mph);if(mph>3&&c.heading!=null)setHeading(c.heading);$("gps").innerHTML="GPS ● &nbsp; V0.5";
+let mph=c.speed!=null?Math.max(0,c.speed*2.23694):0;$("speed").textContent=Math.round(mph);if(mph>3&&c.heading!=null)setHeading(c.heading);$("gps").innerHTML="GPS ● &nbsp; V0.5.1";
 if(navActive)updateNav();else $("status").textContent="> POSITION TRACKING ACTIVE";camera()}
 function camera(){if(!follow||!user)return;let z=navActive?adaptiveZoom():15;map.easeTo({center:user,zoom:z,bearing:navActive&&heading!=null?heading:0,pitch:navActive?22:0,duration:450})}
 function adaptiveZoom(){let s=steps[stepIndex];if(!s)return 15;let m=distanceToStep(s);if(m<150)return 17;if(m<800)return 16;if(m<3200)return 15;return 14.5}
-function gpsError(e){$("gps").textContent="GPS × V0.5";$("status").textContent="> GPS ERROR // "+e.message}
+function gpsError(e){$("gps").textContent="GPS × V0.5.1";$("status").textContent="> GPS ERROR // "+e.message}
 function compass(){if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function")DeviceOrientationEvent.requestPermission().then(x=>{if(x==="granted")listenCompass()}).catch(()=>{});else listenCompass()}
 function listenCompass(){window.addEventListener("deviceorientation",e=>{let h=typeof e.webkitCompassHeading==="number"?e.webkitCompassHeading:(e.alpha!=null?360-e.alpha:null);if(h!=null)setHeading(h)},true)}
 function startGPS(){compass();follow=true;$("status").textContent="> ACQUIRING GPS SIGNAL...";watch=navigator.geolocation.watchPosition(updateFix,gpsError,{enableHighAccuracy:true,maximumAge:250,timeout:15000});$("nav").textContent="[ TRACKING ]"}
 async function search(q){if(!user){$("status").textContent="> ACQUIRE GPS BEFORE NAVIGATION";return} $("status").textContent="> SEARCHING WASTELAND DATABASE...";
 try{let r=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(q)),j=await r.json();if(!j.length)throw 0;dest=[+j[0].lon,+j[0].lat];destName=j[0].display_name.split(",")[0];makeObjective();await calculate(true)}catch(e){$("status").textContent="> DESTINATION / NETWORK ERROR"}}
 function makeObjective(){if(objMarker)objMarker.remove();let e=document.createElement("div");e.className="objective";e.textContent="⚑";objMarker=new maplibregl.Marker({element:e,anchor:"bottom"}).setLngLat(dest).addTo(map)}
-async function calculate(initial=false){if(!user||!dest)return;try{let u=`https://router.project-osrm.org/route/v1/driving/${user[0]},${user[1]};${dest[0]},${dest[1]}?overview=full&geometries=geojson&steps=true`,r=await fetch(u),j=await r.json();if(!j.routes?.length)throw 0;let x=j.routes[0];route=x.geometry;steps=x.legs[0].steps;stepIndex=findFirstUsefulStep();promptState={};routeDistance=x.distance;routeDuration=x.duration;drawRoute();stats(x.distance,x.duration);navActive=true;follow=!initial;$("search").style.display="none";$("turn").style.display="block";$("nav").textContent="[ END NAV ]";$("status").textContent="> NAVIGATION ACTIVE // FOLLOWING ROUTE";lastReroute=Date.now();lastReroutePos=[...user];updateTurn();if(initial)overview();else follow=true}catch(e){$("status").textContent="> ROUTING COMPUTER ERROR"}}
+async function calculate(initial=false){if(!user||!dest)return;try{let u=`https://router.project-osrm.org/route/v1/driving/${user[0]},${user[1]};${dest[0]},${dest[1]}?overview=full&geometries=geojson&steps=true`,r=await fetch(u),j=await r.json();if(!j.routes?.length)throw 0;let x=j.routes[0];route=x.geometry;steps=x.legs[0].steps;stepIndex=findFirstUsefulStep();promptState={};routeDistance=x.distance;routeDuration=x.duration;drawRoute();stats(x.distance,x.duration);navActive=true;follow=!initial;$("search").style.display="none";$("turn").style.display="block";$("nav").textContent="[ END NAV ]";$("status").textContent="> NAVIGATION ACTIVE // FOLLOWING ROUTE";lastReroute=Date.now();lastReroutePos=[...user];updateTurn();if(initial){overview();setTimeout(()=>speak(`Navigation initiated. ${ (x.distance/1609.344).toFixed(1) } miles to ${destName}. Estimated travel time ${Math.max(1,Math.round(x.duration/60))} minutes.`),350)}else follow=true}catch(e){$("status").textContent="> ROUTING COMPUTER ERROR"}}
 function findFirstUsefulStep(){for(let i=0;i<steps.length;i++)if(steps[i].distance>20||steps[i].maneuver?.type==="turn")return i;return 0}
 function drawRoute(){["route-core","route-glow","route-shadow"].forEach(x=>{if(map.getLayer(x))map.removeLayer(x)});if(map.getSource("route"))map.removeSource("route");map.addSource("route",{type:"geojson",data:{type:"Feature",properties:{},geometry:route}});
 const common={source:"route",type:"line",layout:{"line-join":"round","line-cap":"round"}};
@@ -103,7 +103,27 @@ function human(m){if(m>=161)return(m/1609.344).toFixed(1)+" MI";return Math.max(
 function symbol(s){let m=s?.maneuver?.modifier||"";if(m.includes("right"))return"↱";if(m.includes("left"))return"↰";if(m.includes("uturn"))return"↶";return"↑"}
 function action(s){let t=s?.maneuver?.type,m=(s?.maneuver?.modifier||"").toUpperCase();if(t==="turn")return"TURN "+m;if(t==="merge")return"MERGE "+m;if(t==="fork")return"KEEP "+m;if(t==="roundabout")return"ENTER ROUNDABOUT";if(t==="arrive")return"OBJECTIVE";return"CONTINUE"}
 function updateTurn(){let s=steps[stepIndex];if(!s)return;$("arrow").textContent=symbol(s);$("instruction").textContent=action(s)+" IN "+human(distanceToStep(s));$("street").textContent=s.name||"UNNAMED ROAD";let n=steps[stepIndex+1];$("then").textContent=n?"THEN: "+((n.maneuver?.modifier||"STRAIGHT").toUpperCase())+(n.name?" ON "+n.name:""):"OBJECTIVE APPROACHING"}
-function speak(t){if(!voiceOn||!("speechSynthesis"in window))return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.rate=1.05;speechSynthesis.speak(u)}
+function speak(t,force=false){
+ if((!voiceOn&&!force)||!("speechSynthesis" in window))return false;
+ try{
+  speechSynthesis.cancel();
+  speechSynthesis.resume();
+  let u=new SpeechSynthesisUtterance(t);
+  u.rate=1.02;u.volume=1;u.pitch=1;
+  const voices=speechSynthesis.getVoices();
+  const preferred=voices.find(v=>/^en[-_]US/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang));
+  if(preferred)u.voice=preferred;
+  u.onstart=()=>{voiceUnlocked=true;$('status').textContent='> VOICE GUIDANCE ONLINE'};
+  u.onerror=()=>{$('status').textContent='> VOICE OUTPUT BLOCKED // TAP VOICE AGAIN'};
+  speechSynthesis.speak(u);
+  return true;
+ }catch(e){$('status').textContent='> VOICE OUTPUT ERROR';return false}
+}
+function testVoice(){
+ voiceOn=true;$('voice').textContent='[ VOICE ON ]';
+ $('status').textContent='> INITIALIZING VOICE GUIDANCE...';
+ speak('PIP NAV voice guidance online.',true);
+}
 function stagedVoice(s,m){let key=stepIndex+"",st=promptState[key]||0;if(m<45&&st<3){speak(action(s)+(s.name?" onto "+s.name:""));promptState[key]=3}else if(m<180&&st<2){speak("In 500 feet, "+action(s).toLowerCase()+(s.name?" onto "+s.name:""));promptState[key]=2}else if(m<850&&st<1){speak("In half a mile, "+action(s).toLowerCase()+(s.name?" onto "+s.name:""));promptState[key]=1}}
 function nearestRouteDistanceMeters(){if(!route?.coordinates||!user)return 99999;let best=Infinity;for(let i=0;i<route.coordinates.length;i+=Math.max(1,Math.floor(route.coordinates.length/250))){let d=miles(user,route.coordinates[i])*1609.344;if(d<best)best=d}return best}
 function updateNav(){if(miles(user,dest)<.04){arrive();return}let s=steps[stepIndex];if(!s)return;let m=distanceToStep(s);stagedVoice(s,m);
@@ -115,7 +135,11 @@ function arrive(){navActive=false;follow=false;$("status").textContent="> OBJECT
 function endNav(){navActive=false;dest=null;steps=[];route=null;$("turn").style.display="none";$("search").style.display="block";$("destination").value="";$("dist").textContent=$("eta").textContent="--";$("nav").textContent="[ TRACKING ]";if(objMarker){objMarker.remove();objMarker=null}["route-core","route-glow","route-shadow"].forEach(x=>{if(map.getLayer(x))map.removeLayer(x)});if(map.getSource("route"))map.removeSource("route");follow=true;$("status").textContent="> NAVIGATION TERMINATED // GPS ACTIVE"}
 $("nav").onclick=()=>navActive?endNav():(watch===null&&startGPS());
 $("center").onclick=()=>{if(!user)return;follow=true;camera();$("status").textContent=navActive?"> NAVIGATION ACTIVE // FOLLOW MODE":"> POSITION TRACKING ACTIVE"};
-$("voice").onclick=()=>{voiceOn=!voiceOn;$("voice").textContent=voiceOn?"[ VOICE ON ]":"[ VOICE OFF ]";if(!voiceOn&&"speechSynthesis"in window)speechSynthesis.cancel()};
+$("voice").onclick=()=>{
+ if(!voiceOn){testVoice();return}
+ if(!voiceUnlocked){testVoice();return}
+ voiceOn=false;$("voice").textContent="[ VOICE OFF ]";$("status").textContent="> VOICE GUIDANCE MUTED";if("speechSynthesis" in window)speechSynthesis.cancel();
+};
 $("destination").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();let q=e.target.value.trim();if(q){e.target.blur();search(q)}}});
 map.on("dragstart",()=>{follow=false;$("status").textContent="> FREE MAP MODE // PRESS RECENTER"});
 </script>
