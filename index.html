@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <meta name="theme-color" content="#071007">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <title>PIP-NAV</title>
+
+  <link rel="stylesheet"
+        href="https://unpkg.com/maplibre-gl@^6.10.0/dist/maplibre-gl.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #071007;
+      color: #39ff72;
+      font-family: "Courier New", monospace;
+      overflow: hidden;
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+      filter:
+        sepia(1)
+        hue-rotate(70deg)
+        saturate(5)
+        brightness(.65)
+        contrast(1.35);
+    }
+
+    /* Pip-Boy green tint */
+    .green-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background: rgba(0, 255, 80, .05
