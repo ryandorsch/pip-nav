@@ -1,49 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PIP-NAV</title>
 
-  <meta name="theme-color" content="#071007">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link href="https://unpkg.com/maplibre-gl@5.7.1/dist/maplibre-gl.css" rel="stylesheet">
 
-  <title>PIP-NAV</title>
+<style>
+html,body,#map{
+  margin:0;
+  width:100%;
+  height:100%;
+}
 
-  <link rel="stylesheet"
-        href="https://unpkg.com/maplibre-gl@^6.10.0/dist/maplibre-gl.css">
+body{
+  background:#031006;
+  font-family:monospace;
+  color:#39ff72;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
+#map{
+  position:absolute;
+  inset:0;
+}
+
+#hud{
+  position:fixed;
+  top:55px;
+  left:15px;
+  right:15px;
+  z-index:10;
+  padding:12px;
+  color:#39ff72;
+  background:#031006dd;
+  border:2px solid #39ff72;
+  text-shadow:0 0 7px #39ff72;
+}
+
+#status{
+  font-size:12px;
+  margin-top:5px;
+}
+
+#locate{
+  margin-top:10px;
+  padding:8px 12px;
+  color:#39ff72;
+  background:#031006;
+  border:1px solid #39ff72;
+  font-family:monospace;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<div id="hud">
+  <b>PIP-NAV // ROBCO NAVIGATION</b>
+  <div id="status">&gt; MAP SYSTEM INITIALIZING...</div>
+  <button id="locate">[ ACQUIRE GPS ]</button>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5.7.1/dist/maplibre-gl.js"></script>
+
+<script>
+const status = document.getElementById("status");
+
+const map = new maplibregl.Map({
+  container:"map",
+  style:"https://demotiles.maplibre.org/style.json",
+  center:[-74.3,40.4],
+  zoom:8
+});
+
+map.on("load",()=>{
+  status.innerHTML="&gt; MAP ONLINE // GPS STANDBY";
+});
+
+document.getElementById("locate").onclick=()=>{
+  status.innerHTML="&gt; ACQUIRING GPS...";
+
+  navigator.geolocation.getCurrentPosition(
+    p=>{
+      const lat=p.coords.latitude;
+      const lon=p.coords.longitude;
+
+      status.innerHTML="&gt; GPS LOCKED // NAVIGATION READY";
+
+      map.flyTo({
+        center:[lon,lat],
+        zoom:15
+      });
+
+      new maplibregl.Marker({
+        color:"#39ff72"
+      })
+      .setLngLat([lon,lat])
+      .addTo(map);
+    },
+
+    e=>{
+      status.innerHTML="&gt; GPS ERROR: "+e.message;
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000
     }
+  );
+};
+</script>
 
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      background: #071007;
-      color: #39ff72;
-      font-family: "Courier New", monospace;
-      overflow: hidden;
-    }
-
-    #map {
-      position: absolute;
-      inset: 0;
-      filter:
-        sepia(1)
-        hue-rotate(70deg)
-        saturate(5)
-        brightness(.65)
-        contrast(1.35);
-    }
-
-    /* Pip-Boy green tint */
-    .green-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 5;
-      background: rgba(0, 255, 80, .05
+</body>
+</html>
