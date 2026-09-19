@@ -6,11 +6,11 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 
-<meta name="theme-color" content="#020a03">
+<meta name="theme-color" content="#001006">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-<title>PIP-NAV</title>
+<title>PIP-NAV V0.4.1</title>
 
 <link
 href="https://unpkg.com/maplibre-gl@5.7.1/dist/maplibre-gl.css"
@@ -23,8 +23,8 @@ rel="stylesheet">
   --bright:#7dff9e;
   --mid:#24bd55;
   --dim:#117532;
-  --dark:#010803;
-  --panel:rgba(1,12,4,.93);
+  --dark:#001006;
+  --panel:rgba(0,13,5,.94);
 }
 
 *{
@@ -49,23 +49,15 @@ html,body{
 #map{
   position:absolute;
   inset:0;
-
-  /*
-   Less aggressive than V3.
-   Roads and labels stay visible.
-  */
+  background:#001006;
 
   filter:
-    grayscale(1)
-    sepia(.8)
-    hue-rotate(72deg)
-    saturate(5)
-    brightness(.62)
-    contrast(1.55);
+    saturate(1.35)
+    brightness(.72)
+    contrast(1.35);
 }
 
-/* Darkens the base map without
-   destroying road contrast */
+/* subtle darkening only */
 
 #mapShade{
   position:fixed;
@@ -74,10 +66,14 @@ html,body{
   z-index:4;
 
   background:
-    rgba(0,20,5,.18);
+    radial-gradient(
+      circle at center,
+      transparent 25%,
+      rgba(0,12,4,.12) 100%
+    );
 }
 
-/* phosphor */
+/* phosphor glow */
 
 #phosphor{
   position:fixed;
@@ -86,10 +82,14 @@ html,body{
   z-index:5;
 
   background:
-    rgba(0,255,70,.025);
+    radial-gradient(
+      circle at center,
+      rgba(57,255,114,.025),
+      rgba(0,30,8,.07)
+    );
 }
 
-/* scanlines */
+/* CRT scanlines */
 
 #scanlines{
   position:fixed;
@@ -97,19 +97,19 @@ html,body{
   pointer-events:none;
   z-index:40;
 
-  opacity:.55;
+  opacity:.38;
 
   background:
     repeating-linear-gradient(
       0deg,
-      rgba(0,0,0,.14),
-      rgba(0,0,0,.14) 1px,
+      rgba(0,0,0,.16),
+      rgba(0,0,0,.16) 1px,
       transparent 1px,
       transparent 4px
     );
 }
 
-/* subtle CRT vignette */
+/* CRT vignette */
 
 #vignette{
   position:fixed;
@@ -118,8 +118,9 @@ html,body{
   pointer-events:none;
 
   box-shadow:
-    inset 0 0 70px rgba(0,0,0,.55);
+    inset 0 0 75px rgba(0,0,0,.55);
 }
+
 
 /* =========================
    HEADER
@@ -130,7 +131,6 @@ html,body{
   top:0;
   left:0;
   right:0;
-
   z-index:20;
 
   padding:
@@ -144,7 +144,7 @@ html,body{
     2px solid var(--green);
 
   box-shadow:
-    0 0 15px rgba(57,255,114,.2);
+    0 0 15px rgba(57,255,114,.20);
 }
 
 #headerTop{
@@ -166,7 +166,6 @@ html,body{
   display:flex;
   gap:14px;
   align-items:center;
-
   font-size:10px;
 }
 
@@ -181,12 +180,11 @@ html,body{
 
 #subtitle{
   margin-top:3px;
-
   font-size:8px;
   letter-spacing:1.2px;
-
   opacity:.62;
 }
+
 
 /* =========================
    SEARCH
@@ -221,11 +219,10 @@ html,body{
 
 #destination{
   width:100%;
-
   border:0;
   outline:0;
-
   background:transparent;
+
   color:var(--bright);
 
   font-family:"Courier New",monospace;
@@ -238,6 +235,7 @@ html,body{
 #destination::placeholder{
   color:var(--dim);
 }
+
 
 /* =========================
    TURN PANEL
@@ -270,20 +268,15 @@ html,body{
 
 #turnGrid{
   display:grid;
-
-  grid-template-columns:
-    68px 1fr;
-
+  grid-template-columns:72px 1fr;
   gap:10px;
-
   align-items:center;
 }
 
 #turnArrow{
-  font-size:58px;
-  line-height:58px;
+  font-size:60px;
+  line-height:60px;
   text-align:center;
-
   font-family:Arial,sans-serif;
 
   filter:
@@ -300,17 +293,16 @@ html,body{
 
 #turnStreet{
   margin-top:6px;
-
   font-size:12px;
   color:var(--bright);
 }
 
 #thenInstruction{
   margin-top:6px;
-
   font-size:8px;
   opacity:.65;
 }
+
 
 /* =========================
    COMPASS
@@ -320,7 +312,6 @@ html,body{
   display:none;
 
   position:fixed;
-
   z-index:18;
 
   top:
@@ -334,7 +325,7 @@ html,body{
   text-align:center;
 
   background:
-    rgba(1,12,4,.86);
+    rgba(0,13,5,.92);
 
   border:
     1px solid var(--green);
@@ -342,7 +333,7 @@ html,body{
   padding-top:5px;
 
   box-shadow:
-    0 0 8px rgba(57,255,114,.15);
+    0 0 8px rgba(57,255,114,.18);
 }
 
 #compassLetter{
@@ -360,13 +351,13 @@ html,body{
     0 0 7px var(--green);
 }
 
+
 /* =========================
    HUD
 ========================= */
 
 #hud{
   position:fixed;
-
   z-index:20;
 
   bottom:
@@ -381,7 +372,7 @@ html,body{
     1px solid var(--green);
 
   box-shadow:
-    0 0 13px rgba(57,255,114,.2);
+    0 0 13px rgba(57,255,114,.20);
 }
 
 #status{
@@ -398,10 +389,7 @@ html,body{
 
 #stats{
   display:grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
-
+  grid-template-columns:repeat(4,1fr);
   text-align:center;
 }
 
@@ -433,15 +421,13 @@ html,body{
 
 .statUnit{
   margin-top:1px;
-
   font-size:7px;
-  opacity:.55;
+  opacity:.65;
 }
 
 #controls{
   display:grid;
-  grid-template-columns:
-    repeat(3,1fr);
+  grid-template-columns:repeat(3,1fr);
 
   border-top:
     1px solid var(--dim);
@@ -451,13 +437,16 @@ html,body{
   min-height:38px;
 
   border:0;
+
   border-right:
     1px solid var(--dim);
 
   background:transparent;
+
   color:var(--green);
 
   font-family:"Courier New",monospace;
+
   font-size:9px;
   font-weight:bold;
 }
@@ -465,6 +454,7 @@ html,body{
 .ctrl:last-child{
   border-right:0;
 }
+
 
 /* =========================
    BOTTOM NAV
@@ -505,16 +495,17 @@ html,body{
     2px solid var(--green);
 }
 
+
 /* =========================
    PLAYER
 ========================= */
 
 .playerWrap{
-  width:42px;
-  height:42px;
+  width:48px;
+  height:48px;
 
   border:
-    2px solid rgba(57,255,114,.65);
+    2px solid rgba(57,255,114,.45);
 
   border-radius:50%;
 
@@ -522,8 +513,12 @@ html,body{
   justify-content:center;
   align-items:center;
 
+  background:
+    rgba(0,16,6,.35);
+
   box-shadow:
-    0 0 14px rgba(57,255,114,.7),
+    0 0 8px rgba(57,255,114,.8),
+    0 0 18px rgba(57,255,114,.45),
     inset 0 0 12px rgba(57,255,114,.25);
 }
 
@@ -532,13 +527,13 @@ html,body{
   height:0;
 
   border-left:
-    9px solid transparent;
+    10px solid transparent;
 
   border-right:
-    9px solid transparent;
+    10px solid transparent;
 
   border-bottom:
-    25px solid var(--bright);
+    29px solid var(--bright);
 
   filter:
     drop-shadow(0 0 5px var(--green));
@@ -546,13 +541,14 @@ html,body{
   transform-origin:center center;
 }
 
+
 /* =========================
    OBJECTIVE
 ========================= */
 
 .objective{
-  width:28px;
-  height:28px;
+  width:30px;
+  height:30px;
 
   position:relative;
 
@@ -562,10 +558,10 @@ html,body{
   transform:rotate(45deg);
 
   box-shadow:
-    0 0 11px var(--green);
+    0 0 12px var(--green);
 
   background:
-    rgba(1,12,4,.75);
+    rgba(1,12,4,.82);
 }
 
 .objective:after{
@@ -576,15 +572,15 @@ html,body{
   width:8px;
   height:8px;
 
-  top:8px;
-  left:8px;
+  top:9px;
+  left:9px;
 
-  background:
-    var(--green);
+  background:var(--green);
 
   box-shadow:
     0 0 8px var(--green);
 }
+
 
 /* =========================
    ARRIVAL
@@ -594,7 +590,6 @@ html,body{
   display:none;
 
   position:fixed;
-
   z-index:50;
 
   top:50%;
@@ -628,11 +623,11 @@ html,body{
 
 #arrivalSub{
   margin-top:10px;
-
   font-size:11px;
 }
 
-/* hide MapLibre UI */
+
+/* hide stock MapLibre controls */
 
 .maplibregl-control-container{
   display:none;
@@ -665,7 +660,7 @@ html,body{
       </span>
 
       <span id="version">
-        V0.4
+        V0.4.1
       </span>
 
     </div>
@@ -741,7 +736,6 @@ html,body{
     > SYSTEM READY // GPS STANDBY
   </div>
 
-
   <div id="stats">
 
     <div class="stat">
@@ -809,12 +803,14 @@ html,body{
 
       <div
         class="statValue"
-        id="heading">
+        id="headingDirection">
         --
       </div>
 
-      <div class="statUnit">
-        DEG
+      <div
+        class="statUnit"
+        id="heading">
+        --°
       </div>
 
     </div>
@@ -884,9 +880,9 @@ src="https://unpkg.com/maplibre-gl@5.7.1/dist/maplibre-gl.js">
 
 <script>
 
-/* ========================================
-   PIP-NAV V0.4
-======================================== */
+/* =========================================
+   PIP-NAV V0.4.1
+========================================= */
 
 const statusEl =
 document.getElementById("status");
@@ -902,6 +898,9 @@ document.getElementById("eta");
 
 const headingEl =
 document.getElementById("heading");
+
+const headingDirectionEl =
+document.getElementById("headingDirection");
 
 const gpsEl =
 document.getElementById("gpsIndicator");
@@ -947,41 +946,31 @@ document.getElementById("arrival");
 
 
 let userPosition = null;
-
 let playerMarker = null;
-
 let objectiveMarker = null;
-
 let watchID = null;
 
 let navigationActive = false;
-
 let followMode = false;
-
 let voiceEnabled = true;
 
 let destinationPosition = null;
-
 let destinationName = "";
 
 let routeSteps = [];
-
 let routeGeometry = null;
 
 let lastRouteTime = 0;
-
 let lastSpokenStep = -1;
-
 let currentStepIndex = 0;
 
 let lastPosition = null;
-
 let lastReroutePosition = null;
 
 
-/* ========================================
+/* =========================================
    MAP
-======================================== */
+========================================= */
 
 const map =
 new maplibregl.Map({
@@ -1008,12 +997,258 @@ map.on("load",()=>{
   statusEl.innerHTML =
   "> MAP DATABASE ONLINE // GPS STANDBY";
 
+  buildPipBoyMap();
+
 });
 
 
-/* ========================================
+/* =========================================
+   PIP-BOY MAP STYLE
+========================================= */
+
+function buildPipBoyMap(){
+
+  const style =
+  map.getStyle();
+
+  if(
+    !style ||
+    !style.layers
+  ){
+
+    return;
+
+  }
+
+
+  style.layers.forEach(layer=>{
+
+    const id =
+    layer.id.toLowerCase();
+
+
+    /* BACKGROUND */
+
+    if(
+      layer.type ===
+      "background"
+    ){
+
+      try{
+
+        map.setPaintProperty(
+          layer.id,
+          "background-color",
+          "#001006"
+        );
+
+      }catch(e){}
+
+      return;
+
+    }
+
+
+    /* WATER */
+
+    if(
+      id.includes("water") &&
+      layer.type === "fill"
+    ){
+
+      try{
+
+        map.setPaintProperty(
+          layer.id,
+          "fill-color",
+          "#000704"
+        );
+
+        map.setPaintProperty(
+          layer.id,
+          "fill-opacity",
+          1
+        );
+
+      }catch(e){}
+
+      return;
+
+    }
+
+
+    /* LAND */
+
+    if(
+      layer.type === "fill" &&
+      (
+        id.includes("land") ||
+        id.includes("park") ||
+        id.includes("earth") ||
+        id.includes("landcover") ||
+        id.includes("landuse")
+      )
+    ){
+
+      try{
+
+        map.setPaintProperty(
+          layer.id,
+          "fill-color",
+          "#001408"
+        );
+
+        map.setPaintProperty(
+          layer.id,
+          "fill-opacity",
+          .72
+        );
+
+      }catch(e){}
+
+      return;
+
+    }
+
+
+    /* ROADS */
+
+    if(
+      layer.type === "line" &&
+      (
+        id.includes("road") ||
+        id.includes("street") ||
+        id.includes("highway") ||
+        id.includes("motorway") ||
+        id.includes("transport")
+      )
+    ){
+
+      try{
+
+        let roadColor =
+        "#168b3b";
+
+        let opacity =
+        .82;
+
+
+        if(
+          id.includes("motorway") ||
+          id.includes("highway") ||
+          id.includes("trunk")
+        ){
+
+          roadColor =
+          "#2bd85f";
+
+          opacity =
+          .95;
+
+        }
+
+
+        map.setPaintProperty(
+          layer.id,
+          "line-color",
+          roadColor
+        );
+
+        map.setPaintProperty(
+          layer.id,
+          "line-opacity",
+          opacity
+        );
+
+      }catch(e){}
+
+      return;
+
+    }
+
+
+    /* BOUNDARIES */
+
+    if(
+      layer.type === "line" &&
+      id.includes("boundary")
+    ){
+
+      try{
+
+        map.setPaintProperty(
+          layer.id,
+          "line-color",
+          "#0b5d2a"
+        );
+
+        map.setPaintProperty(
+          layer.id,
+          "line-opacity",
+          .45
+        );
+
+      }catch(e){}
+
+    }
+
+
+    /* LABELS */
+
+    if(
+      layer.type ===
+      "symbol"
+    ){
+
+      try{
+
+        map.setPaintProperty(
+          layer.id,
+          "text-color",
+          "#62ff91"
+        );
+
+        map.setPaintProperty(
+          layer.id,
+          "text-halo-color",
+          "#001006"
+        );
+
+        map.setPaintProperty(
+          layer.id,
+          "text-halo-width",
+          2
+        );
+
+        map.setPaintProperty(
+          layer.id,
+          "text-opacity",
+          .90
+        );
+
+      }catch(e){}
+
+
+      try{
+
+        map.setPaintProperty(
+          layer.id,
+          "icon-opacity",
+          .72
+        );
+
+      }catch(e){}
+
+    }
+
+  });
+
+}
+
+
+/* =========================================
    PLAYER MARKER
-======================================== */
+========================================= */
 
 function createPlayerMarker(){
 
@@ -1048,11 +1283,13 @@ function createPlayerMarker(){
 }
 
 
-/* ========================================
+/* =========================================
    OBJECTIVE MARKER
-======================================== */
+========================================= */
 
-function createObjectiveMarker(position){
+function createObjectiveMarker(
+  position
+){
 
   if(objectiveMarker){
 
@@ -1086,26 +1323,33 @@ function createObjectiveMarker(position){
 }
 
 
-/* ========================================
-   DISTANCE HELPER
-======================================== */
+/* =========================================
+   DISTANCE
+========================================= */
 
-function haversineMiles(a,b){
+function haversineMiles(
+  a,
+  b
+){
 
   const R =
   3958.8;
+
 
   const lat1 =
   a[1] *
   Math.PI / 180;
 
+
   const lat2 =
   b[1] *
   Math.PI / 180;
 
+
   const dLat =
   (b[1]-a[1]) *
   Math.PI / 180;
+
 
   const dLon =
   (b[0]-a[0]) *
@@ -1134,14 +1378,18 @@ function haversineMiles(a,b){
 }
 
 
-/* ========================================
+/* =========================================
    HEADING
-======================================== */
+========================================= */
 
-function headingLetter(degrees){
+function headingLetter(
+  degrees
+){
 
-  if(degrees === null ||
-     degrees === undefined){
+  if(
+    degrees === null ||
+    degrees === undefined
+  ){
 
     return "--";
 
@@ -1173,11 +1421,13 @@ function headingLetter(degrees){
 }
 
 
-/* ========================================
-   GPS UPDATE
-======================================== */
+/* =========================================
+   GPS
+========================================= */
 
-function updatePosition(position){
+function updatePosition(
+  position
+){
 
   const c =
   position.coords;
@@ -1198,6 +1448,7 @@ function updatePosition(position){
   if(!playerMarker){
 
     createPlayerMarker();
+
 
     playerMarker
 
@@ -1222,12 +1473,15 @@ function updatePosition(position){
   /* SPEED */
 
 
-  if(c.speed !== null &&
-     c.speed >= 0){
+  if(
+    c.speed !== null &&
+    c.speed >= 0
+  ){
 
     speedEl.innerHTML =
     Math.round(
-      c.speed * 2.23694
+      c.speed *
+      2.23694
     );
 
   }
@@ -1243,8 +1497,10 @@ function updatePosition(position){
   /* HEADING */
 
 
-  if(c.heading !== null &&
-     !isNaN(c.heading)){
+  if(
+    c.heading !== null &&
+    !isNaN(c.heading)
+  ){
 
     const hdg =
     Math.round(
@@ -1252,8 +1508,15 @@ function updatePosition(position){
     );
 
 
+    headingDirectionEl
+    .innerHTML =
+    headingLetter(
+      hdg
+    );
+
+
     headingEl.innerHTML =
-    hdg;
+    hdg + "°";
 
 
     compassLetter.innerHTML =
@@ -1290,7 +1553,7 @@ function updatePosition(position){
   "GPS ●";
 
 
-  /* FOLLOW MODE */
+  /* FOLLOW */
 
 
   if(followMode){
@@ -1298,8 +1561,10 @@ function updatePosition(position){
     let bearing = 0;
 
 
-    if(c.heading !== null &&
-       !isNaN(c.heading)){
+    if(
+      c.heading !== null &&
+      !isNaN(c.heading)
+    ){
 
       bearing =
       c.heading;
@@ -1314,7 +1579,7 @@ function updatePosition(position){
 
       zoom:
       navigationActive
-      ? 16.5
+      ? 16
       : 15,
 
       bearing:
@@ -1324,17 +1589,15 @@ function updatePosition(position){
 
       pitch:
       navigationActive
-      ? 35
+      ? 25
       : 0,
 
-      duration:650
+      duration:
+      650
 
     });
 
   }
-
-
-  /* ACTIVE NAVIGATION */
 
 
   if(navigationActive){
@@ -1357,14 +1620,17 @@ function updatePosition(position){
 }
 
 
-/* ========================================
+/* =========================================
    GPS ERROR
-======================================== */
+========================================= */
 
-function gpsError(error){
+function gpsError(
+  error
+){
 
   gpsEl.innerHTML =
   "GPS ×";
+
 
   statusEl.innerHTML =
   "> GPS ERROR // " +
@@ -1373,13 +1639,15 @@ function gpsError(error){
 }
 
 
-/* ========================================
+/* =========================================
    START GPS
-======================================== */
+========================================= */
 
 function startGPS(){
 
-  if(!navigator.geolocation){
+  if(
+    !navigator.geolocation
+  ){
 
     statusEl.innerHTML =
     "> GPS HARDWARE UNAVAILABLE";
@@ -1393,7 +1661,8 @@ function startGPS(){
   "> ACQUIRING SATELLITE SIGNAL...";
 
 
-  followMode = true;
+  followMode =
+  true;
 
 
   watchID =
@@ -1406,11 +1675,14 @@ function startGPS(){
 
     {
 
-      enableHighAccuracy:true,
+      enableHighAccuracy:
+      true,
 
-      maximumAge:500,
+      maximumAge:
+      500,
 
-      timeout:15000
+      timeout:
+      15000
 
     }
 
@@ -1423,11 +1695,13 @@ function startGPS(){
 }
 
 
-/* ========================================
-   SEARCH
-======================================== */
+/* =========================================
+   DESTINATION SEARCH
+========================================= */
 
-async function searchDestination(query){
+async function searchDestination(
+  query
+){
 
   if(!userPosition){
 
@@ -1462,7 +1736,9 @@ async function searchDestination(query){
 
 
     const response =
-    await fetch(url);
+    await fetch(
+      url
+    );
 
 
     if(!response.ok){
@@ -1522,7 +1798,10 @@ async function searchDestination(query){
 
   catch(error){
 
-    console.error(error);
+    console.error(
+      error
+    );
+
 
     statusEl.innerHTML =
     "> DATABASE CONNECTION ERROR";
@@ -1532,14 +1811,18 @@ async function searchDestination(query){
 }
 
 
-/* ========================================
-   ROUTE
-======================================== */
+/* =========================================
+   ROUTING
+========================================= */
 
-async function calculateRoute(initial=false){
+async function calculateRoute(
+  initial=false
+){
 
-  if(!userPosition ||
-     !destinationPosition){
+  if(
+    !userPosition ||
+    !destinationPosition
+  ){
 
     return;
 
@@ -1571,7 +1854,9 @@ async function calculateRoute(initial=false){
 
 
     const response =
-    await fetch(url);
+    await fetch(
+      url
+    );
 
 
     if(!response.ok){
@@ -1587,8 +1872,10 @@ async function calculateRoute(initial=false){
     await response.json();
 
 
-    if(!data.routes ||
-       !data.routes.length){
+    if(
+      !data.routes ||
+      !data.routes.length
+    ){
 
       statusEl.innerHTML =
       "> ROUTE UNAVAILABLE";
@@ -1610,14 +1897,20 @@ async function calculateRoute(initial=false){
     route.legs[0].steps;
 
 
-    currentStepIndex = 0;
+    currentStepIndex =
+    0;
 
-    lastSpokenStep = -1;
+
+    lastSpokenStep =
+    -1;
 
 
     updateTripStats(
+
       route.distance,
+
       route.duration
+
     );
 
 
@@ -1658,10 +1951,12 @@ async function calculateRoute(initial=false){
     Date.now();
 
 
-    lastReroutePosition =
-    [
+    lastReroutePosition = [
+
       userPosition[0],
+
       userPosition[1]
+
     ];
 
 
@@ -1678,7 +1973,8 @@ async function calculateRoute(initial=false){
 
     else{
 
-      followMode = true;
+      followMode =
+      true;
 
     }
 
@@ -1686,7 +1982,10 @@ async function calculateRoute(initial=false){
 
   catch(error){
 
-    console.error(error);
+    console.error(
+      error
+    );
+
 
     statusEl.innerHTML =
     "> ROUTING COMPUTER ERROR";
@@ -1696,15 +1995,19 @@ async function calculateRoute(initial=false){
 }
 
 
-/* ========================================
-   DRAW ROUTE
-======================================== */
+/* =========================================
+   ROUTE DRAWING
+========================================= */
 
-function drawRoute(geometry){
+function drawRoute(
+  geometry
+){
 
-  if(map.getLayer(
-    "route-core"
-  )){
+  if(
+    map.getLayer(
+      "route-core"
+    )
+  ){
 
     map.removeLayer(
       "route-core"
@@ -1713,9 +2016,11 @@ function drawRoute(geometry){
   }
 
 
-  if(map.getLayer(
-    "route-glow"
-  )){
+  if(
+    map.getLayer(
+      "route-glow"
+    )
+  ){
 
     map.removeLayer(
       "route-glow"
@@ -1724,9 +2029,11 @@ function drawRoute(geometry){
   }
 
 
-  if(map.getLayer(
-    "route-shadow"
-  )){
+  if(
+    map.getLayer(
+      "route-shadow"
+    )
+  ){
 
     map.removeLayer(
       "route-shadow"
@@ -1735,9 +2042,11 @@ function drawRoute(geometry){
   }
 
 
-  if(map.getSource(
-    "route"
-  )){
+  if(
+    map.getSource(
+      "route"
+    )
+  ){
 
     map.removeSource(
       "route"
@@ -1747,7 +2056,9 @@ function drawRoute(geometry){
 
 
   map.addSource(
+
     "route",
+
     {
 
       type:"geojson",
@@ -1764,57 +2075,69 @@ function drawRoute(geometry){
       }
 
     }
+
   );
 
 
-  /* dark underlay makes
-     route visible over roads */
+  /* BLACK SEPARATION */
 
   map.addLayer({
 
-    id:"route-shadow",
+    id:
+    "route-shadow",
 
-    type:"line",
+    type:
+    "line",
 
-    source:"route",
+    source:
+    "route",
 
     layout:{
 
-      "line-join":"round",
+      "line-join":
+      "round",
 
-      "line-cap":"round"
+      "line-cap":
+      "round"
 
     },
 
     paint:{
 
       "line-color":
-      "#001804",
+      "#001006",
 
-      "line-width":14,
+      "line-width":
+      16,
 
-      "line-opacity":.9
+      "line-opacity":
+      1
 
     }
 
   });
 
 
-  /* phosphor glow */
+  /* PHOSPHOR GLOW */
 
   map.addLayer({
 
-    id:"route-glow",
+    id:
+    "route-glow",
 
-    type:"line",
+    type:
+    "line",
 
-    source:"route",
+    source:
+    "route",
 
     layout:{
 
-      "line-join":"round",
+      "line-join":
+      "round",
 
-      "line-cap":"round"
+      "line-cap":
+      "round"
 
     },
 
@@ -1823,43 +2146,53 @@ function drawRoute(geometry){
       "line-color":
       "#39ff72",
 
-      "line-width":12,
+      "line-width":
+      14,
 
-      "line-opacity":.42,
+      "line-opacity":
+      .35,
 
-      "line-blur":5
+      "line-blur":
+      6
 
     }
 
   });
 
 
-  /* bright route core */
+  /* ROUTE CORE */
 
   map.addLayer({
 
-    id:"route-core",
+    id:
+    "route-core",
 
-    type:"line",
+    type:
+    "line",
 
-    source:"route",
+    source:
+    "route",
 
     layout:{
 
-      "line-join":"round",
+      "line-join":
+      "round",
 
-      "line-cap":"round"
+      "line-cap":
+      "round"
 
     },
 
     paint:{
 
       "line-color":
-      "#7dff9e",
+      "#67ff8f",
 
-      "line-width":5.5,
+      "line-width":
+      6,
 
-      "line-opacity":1
+      "line-opacity":
+      1
 
     }
 
@@ -1868,11 +2201,13 @@ function drawRoute(geometry){
 }
 
 
-/* ========================================
+/* =========================================
    FULL ROUTE VIEW
-======================================== */
+========================================= */
 
-function showFullRoute(geometry){
+function showFullRoute(
+  geometry
+){
 
   const bounds =
   new maplibregl
@@ -1897,17 +2232,22 @@ function showFullRoute(geometry){
 
       padding:{
 
-        top:225,
+        top:
+        225,
 
-        bottom:205,
+        bottom:
+        205,
 
-        left:35,
+        left:
+        35,
 
-        right:35
+        right:
+        35
 
       },
 
-      duration:1100
+      duration:
+      1100
 
     }
 
@@ -1916,9 +2256,9 @@ function showFullRoute(geometry){
 }
 
 
-/* ========================================
+/* =========================================
    TRIP STATS
-======================================== */
+========================================= */
 
 function updateTripStats(
   meters,
@@ -1936,10 +2276,13 @@ function updateTripStats(
 
   const mins =
   Math.max(
+
     1,
+
     Math.round(
       seconds / 60
     )
+
   );
 
 
@@ -1966,21 +2309,26 @@ function updateTripStats(
   else{
 
     etaEl.innerHTML =
-    mins + "M";
+    mins +
+    "M";
 
   }
 
 }
 
 
-/* ========================================
+/* =========================================
    TURN SYMBOL
-======================================== */
+========================================= */
 
-function maneuverSymbol(step){
+function maneuverSymbol(
+  step
+){
 
-  if(!step ||
-     !step.maneuver){
+  if(
+    !step ||
+    !step.maneuver
+  ){
 
     return "↑";
 
@@ -1988,11 +2336,14 @@ function maneuverSymbol(step){
 
 
   const modifier =
-  step.maneuver.modifier || "";
+  step.maneuver.modifier ||
+  "";
 
 
   if(
-    modifier.includes("right")
+    modifier.includes(
+      "right"
+    )
   ){
 
     return "↱";
@@ -2001,7 +2352,9 @@ function maneuverSymbol(step){
 
 
   if(
-    modifier.includes("left")
+    modifier.includes(
+      "left"
+    )
   ){
 
     return "↰";
@@ -2010,7 +2363,9 @@ function maneuverSymbol(step){
 
 
   if(
-    modifier.includes("uturn")
+    modifier.includes(
+      "uturn"
+    )
   ){
 
     return "↶";
@@ -2023,14 +2378,17 @@ function maneuverSymbol(step){
 }
 
 
-/* ========================================
+/* =========================================
    HUMAN DISTANCE
-======================================== */
+========================================= */
 
-function humanDistance(meters){
+function humanDistance(
+  meters
+){
 
   const miles =
-  meters / 1609.344;
+  meters /
+  1609.344;
 
 
   if(miles >= .1){
@@ -2042,26 +2400,32 @@ function humanDistance(meters){
 
 
   const feet =
-  meters * 3.28084;
+  meters *
+  3.28084;
 
 
   return Math.max(
+
     50,
+
     Math.round(
       feet / 50
     ) * 50
+
   ) + " FT";
 
 }
 
 
-/* ========================================
+/* =========================================
    TURN PANEL
-======================================== */
+========================================= */
 
 function updateTurnPanel(){
 
-  if(!routeSteps.length){
+  if(
+    !routeSteps.length
+  ){
 
     return;
 
@@ -2082,22 +2446,28 @@ function updateTurnPanel(){
 
 
   turnArrow.innerHTML =
-  maneuverSymbol(step);
+  maneuverSymbol(
+    step
+  );
 
 
   let type =
-  step.maneuver.type || "continue";
+  step.maneuver.type ||
+  "continue";
 
 
   let modifier =
-  step.maneuver.modifier || "";
+  step.maneuver.modifier ||
+  "";
 
 
   let action =
   "CONTINUE";
 
 
-  if(type === "turn"){
+  if(
+    type === "turn"
+  ){
 
     action =
     "TURN " +
@@ -2151,14 +2521,18 @@ function updateTurnPanel(){
   " IN " +
 
   humanDistance(
-    distanceToStep(step)
+    distanceToStep(
+      step
+    )
   );
 
 
   turnStreet.innerHTML =
 
   step.name
+
   ? step.name
+
   : "UNNAMED ROAD";
 
 
@@ -2171,10 +2545,13 @@ function updateTurnPanel(){
   if(next){
 
     const nextAction =
+
     next.maneuver &&
     next.maneuver.modifier
+
     ? next.maneuver.modifier
       .toUpperCase()
+
     : "STRAIGHT";
 
 
@@ -2186,8 +2563,10 @@ function updateTurnPanel(){
 
     (
       next.name
+
       ? " ON " +
         next.name
+
       : ""
     );
 
@@ -2203,16 +2582,20 @@ function updateTurnPanel(){
 }
 
 
-/* ========================================
+/* =========================================
    DISTANCE TO STEP
-======================================== */
+========================================= */
 
-function distanceToStep(step){
+function distanceToStep(
+  step
+){
 
-  if(!step ||
-     !step.maneuver ||
-     !step.maneuver.location ||
-     !userPosition){
+  if(
+    !step ||
+    !step.maneuver ||
+    !step.maneuver.location ||
+    !userPosition
+  ){
 
     return 0;
 
@@ -2230,11 +2613,13 @@ function distanceToStep(step){
 }
 
 
-/* ========================================
+/* =========================================
    SPEECH
-======================================== */
+========================================= */
 
-function speak(text){
+function speak(
+  text
+){
 
   if(!voiceEnabled){
 
@@ -2244,7 +2629,10 @@ function speak(text){
 
 
   if(
-    !("speechSynthesis" in window)
+    !(
+      "speechSynthesis"
+      in window
+    )
   ){
 
     return;
@@ -2252,7 +2640,8 @@ function speak(text){
   }
 
 
-  window.speechSynthesis
+  window
+  .speechSynthesis
   .cancel();
 
 
@@ -2266,7 +2655,8 @@ function speak(text){
   1.05;
 
 
-  window.speechSynthesis
+  window
+  .speechSynthesis
   .speak(
     utterance
   );
@@ -2274,21 +2664,21 @@ function speak(text){
 }
 
 
-/* ========================================
-   NAVIGATION UPDATE
-======================================== */
+/* =========================================
+   LIVE NAVIGATION
+========================================= */
 
 function updateNavigation(){
 
-  if(!destinationPosition ||
-     !routeSteps.length){
+  if(
+    !destinationPosition ||
+    !routeSteps.length
+  ){
 
     return;
 
   }
 
-
-  /* ARRIVAL */
 
   const destinationDistance =
   haversineMiles(
@@ -2300,7 +2690,12 @@ function updateNavigation(){
   );
 
 
-  if(destinationDistance < .04){
+  /* ARRIVAL */
+
+  if(
+    destinationDistance <
+    .04
+  ){
 
     arrive();
 
@@ -2308,8 +2703,6 @@ function updateNavigation(){
 
   }
 
-
-  /* FIND NEXT STEP */
 
   const step =
   routeSteps[
@@ -2320,13 +2713,10 @@ function updateNavigation(){
   if(step){
 
     const meters =
-    distanceToStep(step);
+    distanceToStep(
+      step
+    );
 
-
-    /*
-      move to next instruction
-      when very close
-    */
 
     if(
       meters < 35 &&
@@ -2340,8 +2730,6 @@ function updateNavigation(){
 
     }
 
-
-    /* SPEAK AT ~0.2 MILES */
 
     if(
       meters < 322 &&
@@ -2360,23 +2748,34 @@ function updateNavigation(){
       (
         current.maneuver &&
         current.maneuver.modifier
+
         ? current.maneuver.modifier
+
         : "straight"
       ) +
 
       (
         current.name
+
         ? " onto " +
           current.name
+
         : ""
       );
 
 
       speak(
+
         "In " +
-        humanDistance(meters) +
+
+        humanDistance(
+          meters
+        ) +
+
         ", " +
+
         instruction
+
       );
 
 
@@ -2391,11 +2790,7 @@ function updateNavigation(){
   updateTurnPanel();
 
 
-  /* PERIODIC ROUTE REFRESH
-
-     This also gives us updated
-     remaining distance + ETA.
-  */
+  /* PERIODIC ROUTE REFRESH */
 
   const now =
   Date.now();
@@ -2406,8 +2801,11 @@ function updateNavigation(){
   lastReroutePosition
 
   ? haversineMiles(
+
       userPosition,
+
       lastReroutePosition
+
     )
 
   : 1;
@@ -2429,14 +2827,15 @@ function updateNavigation(){
 }
 
 
-/* ========================================
+/* =========================================
    ARRIVAL
-======================================== */
+========================================= */
 
 function arrive(){
 
   navigationActive =
   false;
+
 
   followMode =
   false;
@@ -2481,23 +2880,27 @@ function arrive(){
 }
 
 
-/* ========================================
-   END NAV
-======================================== */
+/* =========================================
+   END NAVIGATION
+========================================= */
 
 function endNavigation(){
 
   navigationActive =
   false;
 
+
   destinationPosition =
   null;
+
 
   destinationName =
   "";
 
+
   routeSteps =
   [];
+
 
   routeGeometry =
   null;
@@ -2608,13 +3011,17 @@ function endNavigation(){
       center:
       userPosition,
 
-      zoom:15,
+      zoom:
+      15,
 
-      bearing:0,
+      bearing:
+      0,
 
-      pitch:0,
+      pitch:
+      0,
 
-      duration:700
+      duration:
+      700
 
     });
 
@@ -2623,9 +3030,9 @@ function endNavigation(){
 }
 
 
-/* ========================================
+/* =========================================
    BUTTONS
-======================================== */
+========================================= */
 
 navButton.onclick =
 ()=>{
@@ -2639,7 +3046,9 @@ navButton.onclick =
   }
 
 
-  if(watchID === null){
+  if(
+    watchID === null
+  ){
 
     startGPS();
 
@@ -2682,15 +3091,18 @@ document
 
     zoom:
     navigationActive
-    ? 16.5
+    ? 16
     : 15,
 
-    duration:600
+    duration:
+    600
 
   });
 
 };
 
+
+/* VOICE */
 
 voiceButton.onclick =
 ()=>{
@@ -2708,10 +3120,14 @@ voiceButton.onclick =
   : "[ VOICE OFF ]";
 
 
-  if(!voiceEnabled &&
-     "speechSynthesis" in window){
+  if(
+    !voiceEnabled &&
+    "speechSynthesis"
+    in window
+  ){
 
-    window.speechSynthesis
+    window
+    .speechSynthesis
     .cancel();
 
   }
@@ -2719,9 +3135,9 @@ voiceButton.onclick =
 };
 
 
-/* ========================================
+/* =========================================
    SEARCH ENTER
-======================================== */
+========================================= */
 
 destinationInput
 .addEventListener(
@@ -2730,7 +3146,10 @@ destinationInput
 
   event=>{
 
-    if(event.key !== "Enter"){
+    if(
+      event.key !==
+      "Enter"
+    ){
 
       return;
 
@@ -2765,9 +3184,9 @@ destinationInput
 );
 
 
-/* ========================================
-   USER MOVES MAP
-======================================== */
+/* =========================================
+   FREE MAP MODE
+========================================= */
 
 map.on(
   "dragstart",
